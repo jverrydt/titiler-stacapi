@@ -41,6 +41,8 @@ class CacheSettings(BaseSettings):
     # Whether or not caching is enabled
     disable: bool = False
 
+    endpoint: Optional[str] = None
+
     model_config = {
         "env_prefix": "TITILER_STACAPI_CACHE_",
         "env_file": ".env",

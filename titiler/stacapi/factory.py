@@ -56,6 +56,8 @@ from titiler.stacapi.pystac import Client
 from titiler.stacapi.settings import CacheSettings, RetrySettings
 from titiler.stacapi.utils import _tms_limits
 
+from .cache import cacheddd
+
 cache_config = CacheSettings()
 retry_config = RetrySettings()
 
@@ -765,6 +767,7 @@ class OGCWMTSFactory(BaseTilerFactory):
 
     templates: Jinja2Templates = DEFAULT_TEMPLATES
 
+    @cacheddd(alias="default")
     def get_tile(  # noqa: C901
         self,
         req: Dict,
@@ -1067,7 +1070,7 @@ class OGCWMTSFactory(BaseTilerFactory):
                 ]
             },
         )
-        def web_map_tile_service(  # noqa: C901
+        async def web_map_tile_service(  # noqa: C901
             request: Request,
             api_params=Depends(self.path_dependency),
         ):
@@ -1181,7 +1184,7 @@ class OGCWMTSFactory(BaseTilerFactory):
                         detail=f"Invalid STYLE parameters {req_style} for layer {layer['id']}",
                     )
 
-                image = self.get_tile(
+                image = await self.get_tile(
                     req,
                     layer,
                     stac_url=api_params["api_url"],

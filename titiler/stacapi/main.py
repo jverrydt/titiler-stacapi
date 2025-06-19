@@ -4,6 +4,7 @@
 from typing import Any, Dict, List, Optional
 
 import jinja2
+import morecantile
 from fastapi import Depends, FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
@@ -84,10 +85,14 @@ if settings.debug:
     optional_headers = [OptionalHeader.server_timing, OptionalHeader.x_assets]
 
 ###############################################################################
+webmerc = morecantile.tms.get("WebMercatorQuad")
+webmerc.id = "EPSG:3857"
+supported_tms = morecantile.TileMatrixSets({"EPSG:3857": webmerc})
 # OGC WMTS Endpoints
 wmts = OGCWMTSFactory(
     path_dependency=STACApiParams,
     templates=templates,
+    supported_tms=supported_tms,
 )
 app.include_router(
     wmts.router,
